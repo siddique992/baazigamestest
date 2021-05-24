@@ -25,25 +25,6 @@ class AudioFilesListView(APIView):
             serialized_obj = AudioBookSerializer(obj, many=True)
         return Response(serialized_obj.data)
 
-@permission_classes((permissions.AllowAny,))
-class AudioFilesView(APIView):
-    def get(self, request, audioFileType, audioFileID):
-        if audioFileType not in ['song', 'podcast', 'audiobook']:
-            return Response("File type is invalid, must be one from 'song', 'podcast', 'audiobook'", status=400)
-        try:
-            if audioFileType =='song':
-                obj = Song.objects.get(pk=audioFileID)
-                serialized_obj = SongSerializer(obj)
-            elif audioFileType =='podcast':
-                obj = Podcast.objects.get(pk=audioFileID)
-                serialized_obj = PodcastSerializer(obj)
-            elif audioFileType =='audioBook':
-                obj = AudioBook.objects.get(pk=audioFileID)
-                serialized_obj = AudioBookSerializer(obj)
-            return Response(serialized_obj.data)
-        except (Song.DoesNotExist, Song.DoesNotExist, Song.DoesNotExist) as err:
-            return Response(str(err), status=400)
-
     def post(self, request, audioFileType):
         if audioFileType not in ['song', 'podcast', 'audiobook']:
             return Response("File type is invalid, must be one from 'song', 'podcast', 'audiobook'", status=400)
@@ -66,6 +47,25 @@ class AudioFilesView(APIView):
                 serializer.save()
                 return JsonResponse(serializer.data, status=200)
             return JsonResponse(serializer.errors, status=400)
+
+@permission_classes((permissions.AllowAny,))
+class AudioFilesView(APIView):
+    def get(self, request, audioFileType, audioFileID):
+        if audioFileType not in ['song', 'podcast', 'audiobook']:
+            return Response("File type is invalid, must be one from 'song', 'podcast', 'audiobook'", status=400)
+        try:
+            if audioFileType =='song':
+                obj = Song.objects.get(pk=audioFileID)
+                serialized_obj = SongSerializer(obj)
+            elif audioFileType =='podcast':
+                obj = Podcast.objects.get(pk=audioFileID)
+                serialized_obj = PodcastSerializer(obj)
+            elif audioFileType =='audioBook':
+                obj = AudioBook.objects.get(pk=audioFileID)
+                serialized_obj = AudioBookSerializer(obj)
+            return Response(serialized_obj.data)
+        except (Song.DoesNotExist, Song.DoesNotExist, Song.DoesNotExist) as err:
+            return Response(str(err), status=400)
 
     def put(self, request, audioFileType, audioFileID):
         if audioFileType not in ['song', 'podcast', 'audiobook']:
